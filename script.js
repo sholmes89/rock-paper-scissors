@@ -8,33 +8,60 @@ const playRound = (playerChoice,computerChoice) => {
 
     if (player === 'rock') {
         if (cpu === 'rock') {
-            return 'Tie - Rock drew with Rock'
-        } else if (cpu = 'paper') {
+            return {
+                result: 'tie',
+                msg: 'Cpu chose Rock, you tied!'
+            }
+        } else if (cpu === 'paper') {
             cpuScore = cpuScore + 1
-            return 'You Lost - Paper beats Rock'
+            return {
+                result: 'loss',
+                msg: 'Cpu chose Paper, you lost!'
+            }
         } else {
             userScore = userScore + 1
-            return 'You Won - Rock beats scissors'
+            return {
+                result: 'win',
+                msg: 'Cpu chose Scissors, you win!'
+            }
         }
     } else if (player === 'paper') {
         if (cpu === 'rock') {
             userScore = userScore + 1
-            return 'You won, Paper beats Rock'
+            return {
+                result: 'win',
+                msg: 'Cpu chose Rock, you win!'
+            }
         } else if (cpu === 'paper') {
-            return 'Tie - Paper drew with Paper'
+            return {
+                result: 'tie',
+                msg: 'Cpu chose Paper, you tied!'
+            }
         } else {
             cpuScore = cpuScore + 1
-            return 'You lost - Scissors beat Paper'
+            return {
+                result: 'loss',
+                msg: 'Cpu chose Scissors, you lost!'
+            }
         }
     } else if (player === 'scissors') {
         if (cpu === 'rock') {
             cpuScore = cpuScore + 1
-            return 'You lost - Rocks beat Scissors'
+            return {
+                result: 'loss',
+                msg: 'Cpu chose Rock, you lost!'
+            }
         } else if (cpu === 'paper') {
             userScore = userScore + 1
-            return 'You won - Scissors beat paper'
+            return {
+                result: 'win',
+                msg: 'Cpu chose Paper, you win!'
+            }
         } else {
-            return 'Tie - Scissors drew with Scissors'
+            return {
+                result: 'tie',
+                msg: 'Cpu chose Scissors, you tied!'
+            }
         }
     } else {
         return 'You entered an invalid term'
@@ -57,22 +84,36 @@ const getComputerChoice = () => {
     }
 }
 
-const game = () => {
-    for(let i = 1; i <= 5; i++) {
-        let userGuess = prompt('Rock,Paper,Scissors?')
-        let cpuGuess = getComputerChoice()
-        console.log('You: ' + userGuess + ' - Cpu guesses: ' + cpuGuess)
-        playRound(userGuess, cpuGuess)
-        if (i === 5) {
-            if (userScore > cpuScore) {
-                console.log('You won: ' + userScore + '-' + cpuScore)
-            } else if (userScore < cpuScore) {
-                console.log('You lost: ' + userScore + '-' + cpuScore)
-            } else (
-                console.log('You tied: ' + userScore + '-' + cpuScore)
-            )
-        }
-    }
-}
+const resultContainer = document.querySelector('#RoundResult')
+const buttons = document.querySelectorAll('.btn')
+const cpuScoreEle = document.querySelector('#CPUScore')
+const userScoreEle = document.querySelector('#YourScore')
 
-game()
+buttons.forEach(button => button.addEventListener('click', () => {
+    let activeBtn = document.querySelector('.btnActive')
+    if (activeBtn) {
+        activeBtn.classList.remove('btnActive')
+    }
+    button.classList.add('btnActive');
+    let userGuess = button.getAttribute('data-choice')
+    let cpuGuess = getComputerChoice()
+    let round = playRound(userGuess, cpuGuess)
+    resultContainer.classList.remove("win", "loss", "tie")
+    resultContainer.innerText = round.msg
+    resultContainer.classList.add(round.result)
+    cpuScoreEle.innerText = cpuScore;
+    userScoreEle.innerText = userScore;
+    if (cpuScore === 5|| userScore === 5) {
+        alert(cpuScore === 5 ? 'Unlucky, you lost!' : 'Yay you won!')
+        let activeBtn = document.querySelector('.btnActive')
+        if (activeBtn) {
+            activeBtn.classList.remove('btnActive')
+        }
+        userScore = 0;
+        cpuScore = 0;
+        resultContainer.innerText = '';
+        resultContainer.classList.remove("win", "loss", "tie")
+        cpuScoreEle.innerText = cpuScore;
+        userScoreEle.innerText = userScore;
+    }
+}))
